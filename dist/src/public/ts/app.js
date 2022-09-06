@@ -31,4 +31,5 @@ nicknameForm.addEventListener("submit", (e) => {
     e.preventDefault();
     const input = nicknameForm.querySelector("input");
     socket.send(makeMessage("nickname", input.value));
+    input.value = "";
 });

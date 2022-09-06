@@ -1,4 +1,4 @@
-import express, { Request, Response, Application } from "express";
+import express, { Request, Response } from "express";
 import http from "http";
 import WebSocket from "ws";
 class App {
@@ -12,6 +12,10 @@ class App {
 interface Message {
   type: string;
   payload: string;
+}
+
+interface NoomWebSocket {
+  nickname: string;
 }
 
 const app = new App().application;
@@ -32,22 +36,27 @@ const handleListen = () => {
 
 const server = http.createServer(app);
 
-const sockets: WebSocket[] = [];
+const sockets: Array<WebSocket & NoomWebSocket> = [];
 
 const wss = new WebSocket.Server({ server });
-wss.on("connection", (socket: WebSocket) => {
+
+wss.on("connection", (socket: WebSocket & NoomWebSocket) => {
   sockets.push(socket);
   console.log("Connected to Browser ✅");
 
-  socket.on("close", () => console.log("Disconnected from Browser ❌"));
-  socket.on("message", (message: string) => {
-    const parseMessage: Message = JSON.parse(message);
+  socket["nickname"] = "Anonymous";
 
-    if (parseMessage.type === "message") {
+  socket.on("close", () => console.log("Disconnected from Browser ❌"));
+
+  socket.on("message", (message: string) => {
+    const parsedMessage: Message = JSON.parse(message);
+
+    if (parsedMessage.type === "message") {
       sockets.forEach((s) => {
-        s.send(parseMessage.payload);
+        s.send(`${socket.nickname} : ${parsedMessage.payload}`);
       });
-    } else {
+    } else if (parsedMessage.type === "nickname") {
+      socket["nickname"] = parsedMessage.payload;
     }
   });
 

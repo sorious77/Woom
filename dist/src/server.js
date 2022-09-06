@@ -30,15 +30,17 @@ const wss = new ws_1.default.Server({ server });
 wss.on("connection", (socket) => {
     sockets.push(socket);
     console.log("Connected to Browser ✅");
+    socket["nickname"] = "Anonymous";
     socket.on("close", () => console.log("Disconnected from Browser ❌"));
     socket.on("message", (message) => {
-        const parseMessage = JSON.parse(message);
-        if (parseMessage.type === "message") {
+        const parsedMessage = JSON.parse(message);
+        if (parsedMessage.type === "message") {
             sockets.forEach((s) => {
-                s.send(parseMessage.payload);
+                s.send(`${socket.nickname} : ${parsedMessage.payload}`);
             });
         }
-        else {
+        else if (parsedMessage.type === "nickname") {
+            socket["nickname"] = parsedMessage.payload;
         }
     });
     socket.send("hello!");

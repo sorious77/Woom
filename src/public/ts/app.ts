@@ -43,4 +43,5 @@ nicknameForm.addEventListener("submit", (e) => {
   const input = nicknameForm.querySelector("input") as HTMLInputElement;
 
   socket.send(makeMessage("nickname", input.value));
+  input.value = "";
 });
