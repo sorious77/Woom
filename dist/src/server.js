@@ -28,10 +28,8 @@ const server = http_1.default.createServer(app);
 const wss = new ws_1.default.Server({ server });
 wss.on("connection", (socket) => {
     console.log("Connected to Browser ✅");
-    socket.on("close", () => {
-        console.log("Disconnected from Browser ❌");
-    });
-    socket.on("message", (message) => console.log(message));
+    socket.on("close", () => console.log("Disconnected from Browser ❌"));
+    socket.on("message", (message) => socket.send(message.toString("utf-8")));
     socket.send("hello!");
 });
 server.listen(3000, handleListen);

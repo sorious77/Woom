@@ -27,15 +27,19 @@ const handleListen = () => {
 
 const server = http.createServer(app);
 
+const sockets: WebSocket[] = [];
+
 const wss = new WebSocket.Server({ server });
 wss.on("connection", (socket: WebSocket) => {
+  sockets.push(socket);
   console.log("Connected to Browser ✅");
 
-  socket.on("close", () => {
-    console.log("Disconnected from Browser ❌");
+  socket.on("close", () => console.log("Disconnected from Browser ❌"));
+  socket.on("message", (message) => {
+    sockets.forEach((s) => {
+      s.send(message.toString("utf-8"));
+    });
   });
-
-  socket.on("message", (message) => console.log(message.toString("utf8")));
 
   socket.send("hello!");
 });
