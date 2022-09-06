@@ -4,6 +4,8 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
+const http_1 = __importDefault(require("http"));
+const ws_1 = __importDefault(require("ws"));
 class App {
     constructor() {
         this.application = (0, express_1.default)();
@@ -12,13 +14,18 @@ class App {
 const app = new App().application;
 app.set("view engine", "pug");
 app.set("views", __dirname + "/views");
-// app.use("/public", express.static(__dirname + "../dist/src/public/ts/app.js"));
 app.use("/public", express_1.default.static(__dirname + "/../dist/src/public"));
 app.get("/", (req, res) => res.render("home"));
-app.listen(3000, () => {
+const handleListen = () => {
     console.log(`
   ################################################
   🚀  Server listening on port: 3000🚀
   ################################################
 `);
+};
+// app.listen(3000, handleListen);
+const server = http_1.default.createServer(app);
+const wss = new ws_1.default.Server({
+    server,
 });
+server.listen(3000, handleListen);

@@ -1,2 +1,2 @@
 "use strict";
-alert("hizzz");
+// alert("hizzz");
