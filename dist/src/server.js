@@ -25,11 +25,22 @@ const handleListen = () => {
 `);
 };
 const server = http_1.default.createServer(app);
+const sockets = [];
 const wss = new ws_1.default.Server({ server });
 wss.on("connection", (socket) => {
+    sockets.push(socket);
     console.log("Connected to Browser ✅");
     socket.on("close", () => console.log("Disconnected from Browser ❌"));
-    socket.on("message", (message) => socket.send(message.toString("utf-8")));
+    socket.on("message", (message) => {
+        const parseMessage = JSON.parse(message);
+        if (parseMessage.type === "message") {
+            sockets.forEach((s) => {
+                s.send(parseMessage.payload);
+            });
+        }
+        else {
+        }
+    });
     socket.send("hello!");
 });
 server.listen(3000, handleListen);

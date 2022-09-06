@@ -9,6 +9,11 @@ class App {
   }
 }
 
+interface Message {
+  type: string;
+  payload: string;
+}
+
 const app = new App().application;
 
 app.set("view engine", "pug");
@@ -35,10 +40,15 @@ wss.on("connection", (socket: WebSocket) => {
   console.log("Connected to Browser ✅");
 
   socket.on("close", () => console.log("Disconnected from Browser ❌"));
-  socket.on("message", (message) => {
-    sockets.forEach((s) => {
-      s.send(message.toString("utf-8"));
-    });
+  socket.on("message", (message: string) => {
+    const parseMessage: Message = JSON.parse(message);
+
+    if (parseMessage.type === "message") {
+      sockets.forEach((s) => {
+        s.send(parseMessage.payload);
+      });
+    } else {
+    }
   });
 
   socket.send("hello!");
