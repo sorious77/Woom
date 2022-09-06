@@ -24,10 +24,14 @@ const handleListen = () => {
   ################################################
 `);
 };
-const handleConnection = (socket) => {
-    console.log(socket);
-};
 const server = http_1.default.createServer(app);
 const wss = new ws_1.default.Server({ server });
-wss.on("connection", handleConnection);
+wss.on("connection", (socket) => {
+    console.log("Connected to Browser ✅");
+    socket.on("close", () => {
+        console.log("Disconnected from Browser ❌");
+    });
+    socket.on("message", (message) => console.log(message));
+    socket.send("hello!");
+});
 server.listen(3000, handleListen);
