@@ -15,7 +15,8 @@ const app = new App().application;
 app.set("view engine", "pug");
 app.set("views", __dirname + "/views");
 app.use("/public", express_1.default.static(__dirname + "/../dist/src/public"));
-app.get("/", (req, res) => res.render("home"));
+app.get("/", (_, res) => res.render("home"));
+app.get("/*", (_, res) => res.redirect("/"));
 const handleListen = () => {
     console.log(`
   ################################################
@@ -23,9 +24,10 @@ const handleListen = () => {
   ################################################
 `);
 };
-// app.listen(3000, handleListen);
+const handleConnection = (socket) => {
+    console.log(socket);
+};
 const server = http_1.default.createServer(app);
-const wss = new ws_1.default.Server({
-    server,
-});
+const wss = new ws_1.default.Server({ server });
+wss.on("connection", handleConnection);
 server.listen(3000, handleListen);
